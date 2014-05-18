@@ -1,4 +1,4 @@
-Reproducible Research - Project 1
+Coursera Reproducible Research - Project 1
 =================================
 
 ## 1. Mean and Total Steps
