@@ -1,20 +1,102 @@
-# Reproducible Research: Peer Assessment 1
+Reproducible Research - Project 1
+=================================
 
+## 1. Mean and Total Steps
 
-## Loading and preprocessing the data
+### Load Data
+```{r loaddata}
+fit <- read.csv("activity.csv")
+```
 
+### Omit NA & Aggregate number of steps per day
+```{r omitna}
+fit2 <- na.omit(fit)
+fit3 <- aggregate(fit2$steps,fit2[2],sum)
+```
 
+### Draw a histr plot for number of steps in a day
+```{r drawhist,echo=TRUE}
+hist(fit3$x,col="green",main="Historgram of Number of Steps per day",xlab="Number of Steps",ylab="Count of Days")
+```
 
-## What is mean total number of steps taken per day?
+### Computing Mean steps
+```{r mean,echo = TRUE}
+mean(fit3$x)
+```
 
+### Computing Median steps
+```{r median,echo=TRUE}
+median(fit3$x)
+```
+## 2. Average Daily Activity Pattern
 
+### Creating 5 min plot intervals
 
-## What is the average daily activity pattern?
+Find average across intervals
 
+```{r interval,echo=TRUE}
+fit4 <- aggregate(fit2$steps,fit2[3],mean)
+```
 
+Draw Plot
+```{r intplot,echo=TRUE}
+plot(x~interval,data=fit4,type='l',col="red",xlab="At Interval",ylab="Mean steps per day",main="Average Daily Activity Pattern")
+```
 
-## Imputing missing values
+### Peak Interval
+```{r peakint,echo=TRUE}
+fit4[which(fit4$x==max(fit4$x)),1]
+```
 
+## 3. Imputing Missing Values
 
+### Count Missing Values
+```{r missing,echo=TRUE}
+ missing <- nrow(fit[(!complete.cases(fit)),])
+```
+The number of rows with missing data are `r missing`.
 
-## Are there differences in activity patterns between weekdays and weekends?
+### Fill in Missing Values
+
+```{r impute,echo=TRUE}
+fit5 <- aggregate(fit2$steps,fit2[3],mean)
+fit6 <- merge(x=fit,y=fit5,by="interval",all.x=TRUE)
+fit6$steps <- ifelse(is.na(fit6$steps),fit6$x,fit6$steps)
+fit7 <- fit6[,-c(4)]
+```
+
+### Draw 2nd Hist of Steps per Day
+
+```{r drawhist2,echo=TRUE}
+  fit8 <- aggregate(fit7$steps,fit7[3],sum)
+  hist(fit8$x,col="green",main="2nd Historgram of Number of Steps per day",xlab="Number of Steps",ylab="Count of Days")
+```
+
+### Computing 2nd Mean
+```{r mean2,echo = TRUE}
+mean(fit8$x)
+```
+
+### Computing 2nd Median
+```{r median2,echo=TRUE}
+median(fit8$x)
+```
+
+## 4. Activity Pattern: Weekdays vs Weekends
+
+Factoring Weekday and Weekend from Date
+
+```{r wkday,echo=TRUE}
+fit9 <- fit7
+fit9$date1 <- as.Date(fit9$date,format="%Y-%m-%d")
+fit9$flag1 <- weekdays(fit9$date1)
+fit9$flag2 <- fit9$flag1=="Sunday" | fit9$flag1=="Saturday"
+fit9$flag3 <- factor(ifelse(fit9$flag2,"weekend","weekday")) 
+```
+
+Plot to compare activity by Weekday/Weekend
+```{r wkplot,echo=TRUE}
+fit10<- aggregate(fit9$steps,fit9[c(1,7)],mean)
+library(lattice)
+xyplot(x ~ interval | flag3,data=fit10,layout=c(1,2),type="l",xlab="Interval",ylab="Number of steps")
+```
