@@ -1,0 +1,56 @@
+Reproducible Research - Project 1
+=================================
+
+## 1. Mean and Total Steps
+
+### Load Data
+```{r loaddata}
+fit <- read.csv("activity.csv")
+```
+
+### Omit NA & Aggregate number of steps per day
+```{r omitna}
+fit2 <- na.omit(fit)
+fit3 <- aggregate(fit2$steps,fit2[2],sum)
+```
+
+### Draw a histr plot for number of steps in a day
+```{r drawhist,echo=TRUE}
+hist(fit3$x,col="green",main="Historgram of Number of Steps per day",xlab="Number of Steps",ylab="Count of Days")
+```
+
+### Computing Mean
+```{r mean,echo = TRUE}
+mean(fit3$x)
+```
+
+### Computing Mean
+```{r median,echo=TRUE}
+median(fit3$x)
+```
+## 2. Average Daily Activity Pattern
+
+### Creating 5 min plot intervals
+
+Find average across intervals
+
+```{r interval,echo=TRUE}
+fit4 <- aggregate(fit2$steps,fit2[3],mean)
+```
+
+Draw Plot
+```{r intplot,echo=TRUE}
+plot(x~interval,data=fit4,type='l',col="red",xlab="At Interval",ylab="Mean steps per day",main="Average Daily Activity Pattern")
+```
+
+### Peak Interval
+```{r peakint,echo=TRUE}
+fit4[which(fit4$x==max(fit4$x)),1]
+```
+
+## 3. Imputing Missing Values
+
+### Count Missing Values
+```{r missing,echo=TRUE}
+nrow(fit[(!complete.cases(fit)),])
+```

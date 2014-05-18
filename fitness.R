@@ -1,0 +1,1 @@
+fitData <- read.csv("activity.csv")
